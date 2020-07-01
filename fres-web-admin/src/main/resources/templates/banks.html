@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Bank Management Page</title>
+    <th:block layout:fragment="headerfiles">
+        <!-- Toastr -->
+        <link rel="stylesheet" th:href="@{/LTE/plugins/toastr/toastr.min.css}"/>
+    </th:block>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div layout:fragment="content" class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Bank Management</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{/home}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Bank Management</li>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Main row -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <a th:href="@{/banks/create}" class="btn btn-primary"> <i
+                                    class="fas fa-plus ml-2"> ADD NEW </i>
+                            </a>
+                            <div class="card-tools">
+                                <form method="POST" th:action="@{/banks}">
+                                    <div class="input-group input-group-sm" style="width: 150px;">
+                                        <input type="text" name="table_search" id="searchValue"
+                                               th:value="*{searchValue}" class="form-control float-right"
+                                               placeholder="Search">
+
+                                        <div class="input-group-append">
+                                            <button type="submit" class="btn btn-default">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-hover table-striped" style="text-align: center">
+                                <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã NH</th>
+                                    <th>Tên ngân hàng</th>
+                                    <th>Đầu số thẻ</th>
+                                    <th>Trạng thái</th>
+                                    <th>Người tạo</th>
+                                    <th>Ngày cập nhật</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+
+                                <tbody class="list-bank">
+                                <tr th:each="bank, iterator : ${data.content}" th:data-id="${bank.bankId}">
+                                    <td th:text="${1 + iterator.index + (currentPage * data.size)}"></td>
+                                    <td th:text="${bank.code}"></td>
+                                    <td th:text="${bank.legalName}"></td>
+                                    <td th:text="${bank.prefixCard}"></td>
+                                    <!-- <td>-->
+                                    <!-- <span th:class="${bank.status} == 1 ? 'custom-control custom-switch custom-control-input' : 'custom-control custom-switch custom-control-input custom-switch-off-danger custom-switch-on-success'"-->
+                                    <!-- th:id="${bank.status} == 1 ? 'customSwitch1' : 'customSwitch3'">-->
+                                    <!-- </span>-->
+                                    <!-- </td>-->
+                                    <td th:value="${bank.getStatus()}">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" th:checked="${bank.status} == 1 ? ${true} : ${false}" class="custom-control-input" id="customSwitch1" disabled>
+                                            <label class="custom-control-label" for="customSwitch1"></label>
+                                        </div>
+                                    </td>
+                                    <td th:text="${bank.modifiedBy}"></td>
+                                    <td th:text="${#temporals.format(bank.modifiedDatetime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                                    <td class="project-actions text-center">
+                                        <a class="btn btn-primary btn-sm"
+                                           th:href="@{/banks/update(bankId=${bank.bankId})}"><i
+                                                class="fas fa-pencil-alt">&nbsp;&nbsp;Edit</i></a>
+
+                                        <button th:attr="bankId=${bank.bankId}"
+                                                class="btn btn btn-danger btn-sm delete-bank">
+                                            <i class="fas fa-trash"></i>&nbsp;&nbsp;Delete
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã NH</th>
+                                    <th>Tên ngân hàng</th>
+                                    <th>Đầu số thẻ</th>
+                                    <th>Trạng thái</th>
+                                    <th>Người tạo</th>
+                                    <th>Ngày cập nhật</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer clearfix">
+                            <ul th:if="${data.totalPages > 0}"
+                                class="pagination pagination-sm m-0 float-right">
+                                <li class="page-item"
+                                    th:classappend="${currentPage}>0?'':'disabled'"><a
+                                        class="page-link" th:with="preIndex=${currentPage - 1}"
+                                        th:href="@{/banks(searchValue=${searchValue},pageNo=${preIndex}<0?0:${preIndex})}">&laquo;</a></li>
+                                <li class="page-item"
+                                    th:each="i : ${#numbers.sequence(0, data.totalPages-1)}"
+                                    th:classappend="${currentPage}==${i}?'active':''"><a
+                                        class="page-link" th:with="currentIndex=${i+1}"
+                                        th:text="${currentIndex}"
+                                        th:href="@{/banks(searchValue=${searchValue},pageNo=${i})}"></a>
+                                </li>
+                                <li class="page-item"
+                                    th:classappend="${currentPage}<${data.totalPages}-1?'':'disabled'"><a
+                                        class="page-link" th:with="postIndex=${currentPage + 1}"
+                                        th:href="@{/banks(searchValue=${searchValue},pageNo=${postIndex}>=${data.totalPages}?(${data.totalPages-1}):${postIndex})}">&raquo;</a></li>
+                            </ul>
+                            <ul th:unless="${data.totalPages > 0}"
+                                class="pagination pagination-sm m-0 float-right">
+                                <li class="page-item" th:classappend="disabled"><a
+                                        class="page-link" th:with="preIndex=${currentPage - 1}"
+                                        href="#">&laquo;</a></li>
+                                <li class="page-item" th:classappend="'active'"><a
+                                        class="page-link" th:text="1"
+                                        th:href="@{/banks(searchValue=${searchValue},pageNo=${i})}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="disabled"><a
+                                        class="page-link" th:with="postIndex=${currentPage + 1}"
+                                        href="#">&raquo;</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                </div>
+                <!-- /.row (main row) -->
+            </div>
+            <!-- /.container-fluid -->
+
+            <div class="modal fade" id="modal-danger">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-danger">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Danger Modal</h4>
+                            <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to block this customer?</p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <form id="lockForm" action="#" method="POST">
+                                <input type="hidden" name="block-id"/>
+                                <button type="submit" class="btn btn-outline-light">Save
+                                    changes
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-outline-light"
+                                    data-dismiss="modal">Close
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+
+            <div class="modal fade" id="modal-success">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-success">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Success Modal</h4>
+                            <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to unblock this customer?</p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <form id="unlockForm" action="#" method="POST">
+                                <input type="hidden" name="unblock-id"/>
+                                <button type="submit" class="btn btn-outline-light">Save
+                                    changes
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-outline-light"
+                                    data-dismiss="modal">Close
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+
+            <!-- start modal confirm-->
+            <div id="modal-confirm" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header justify-content-between">
+                            <h4 class="modal-title">Are you sure?</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Do you really want to delete these records?.</p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+<!--                            <form id="delete-confirm" action="#" method="GET">-->
+                                <button type="submit" class="btn btn-danger delete-confirm">Delete
+                                </button>
+<!--                            </form>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end modal confirm-->
+        </div></section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<th:block layout:fragment="script">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
+    <script src="/js/bank.js"></script>
+</th:block>
+</body>
+</html>

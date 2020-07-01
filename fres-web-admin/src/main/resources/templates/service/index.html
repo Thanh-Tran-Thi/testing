@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Danh mục dịch vụ</title>
+    <th:block layout:fragment="headerfiles">
+        <!-- Toastr -->
+        <link rel="stylesheet" th:href="@{/LTE/plugins/toastr/toastr.min.css}"/>
+    </th:block>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div layout:fragment="content" class="content-wrapper">
+    <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Sửa Danh Mục Dịch Vụ</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label class="col-form-label">Mã Dịch Vụ</label>
+                            <input type="text" class="form-control" id="code" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-form-label">Tên Dịch Vụ</label>
+                            <input type="text" class="form-control" id="name"/>
+                        </div>
+                        <label class="col-form-label">Chuyển Mạch</label>
+                        <div class="switchToggle">
+                            <input type="checkbox" id="tran1"/>
+                            <label for="tran1"></label>
+                        </div>
+                        <input type="hidden" class="form-control" id="id" value="">
+                        <input type="hidden" class="form-control" id="status" value="">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btn-edit">Subbmit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Danh mục dịch vụ</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{/home}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Danh mục dịch vụ</li>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Main row -->
+            <div class="row">
+
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <a href="/service/add" class="btn btn-primary">Thêm <i class="fas fa-plus ml-2"></i>
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <table id="send-bank-configuration" class="table table-bordered table-hover table-striped"
+                                   style="text-align: center">
+                                <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã DV</th>
+                                    <th>Tên dịch vụ</th>
+                                    <th>Chuyển mạch</th>
+                                    <th>Người cập nhật</th>
+                                    <th>Ngày cập nhật</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="service, i : ${listServices}">
+                                    <td th:text="${i.count}"></td>
+                                    <td th:text="${service.code}" align="left"></td>
+                                    <td th:text="${service.name}" align="left"></td>
+                                    <td align="center">
+                                        <div class="switchToggle avoid-clicks">
+                                            <input type="checkbox" th:checked="${service.transStatus == 1}" readonly/>
+                                            <label></label>
+                                        </div>
+                                    </td>
+                                    <td th:text="${service.modifiedBy}"></td>
+                                    <td th:text="${service.modifiedDateTime}"/>
+                                    <td>
+                                        <i class="fas fa-pencil-alt" data-toggle="modal" data-target="#edit"
+                                           th:data-code="${service.code}"
+                                           th:data-name="${service.name}"
+                                           th:data-status="${service.status}"
+                                           th:data-tran="${service.transStatus}"
+                                           th:data-id="${service.serviceId}"
+                                        ></i>
+                                        <a onclick="return confirm('Ban co muon xoa khong ?')"
+                                           th:href="@{'/service/delete?service_id=' + ${service.serviceId}}"><i
+                                                class="fas fa-trash"></i></a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                        <!-- /.card-body -->
+                    </div>
+                </div>
+            </div>
+            <!-- /.row (main row) -->
+        </div>
+        <!-- /.container-fluid -->
+
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<th:block layout:fragment="script"></th:block>
+<th:block layout:fragment="script">
+    <script>
+        $('#edit').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            var code = button.data('code')
+            var name = button.data('name')
+            var tran = button.data('tran')
+            var status = button.data('status')
+            var id = button.data('id')
+            console.log(button.data('tran'))
+            var modal = $(this)
+
+            modal.find('.modal-body #tran1').val(tran)
+            modal.find('.modal-body #status').val(status)
+            modal.find('.modal-body #name').val(name)
+            modal.find('.modal-body #code').val(code)
+            modal.find('.modal-body #id').val(id)
+            console.log(tran);
+            if (tran == 1) {
+                modal.find('.modal-body #tran1').prop('checked', true)
+                modal.find('.modal-body #tran1').val(tran)
+            } else {
+                modal.find('.modal-body #tran1').prop('checked', false)
+                modal.find('.modal-body #tran1').val(tran)
+            }
+        })
+    </script>
+    <script>
+        $('#tran1').change(function () {
+            this.value = Number(this.checked)
+        })
+    </script>
+    <script>
+        $('#btn-edit').off('click').on('click', function () {
+            event.preventDefault()
+            serviceId = $('#id').val()
+            code = $('#code').val()
+            status = $('#status').val()
+            tran = $('#tran1').val()
+            name = $('#name').val()
+            req = {
+                serviceId: serviceId,
+                code: code,
+                status: status,
+                transStatus: tran,
+                name: name
+            }
+            console.log(req)
+            var myJSON = JSON.stringify(req);
+            console.log(myJSON)
+            $.ajax({
+                url: '/service/edit',
+                type: 'POST',
+                data: myJSON,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                error: function (data) {
+                    alert("Error !!")
+                },
+                success: function (data) {
+                    alert("Success!")
+                    window.location.assign('/service');
+                }
+            });
+
+
+        })
+    </script>
+</th:block>
+
+
+</body>
+</html>

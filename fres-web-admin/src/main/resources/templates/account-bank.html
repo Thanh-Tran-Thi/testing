@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Account Bank Page</title>
+    <script th:src="@{/LTE/plugins/jquery/jquery.min.js}"></script>
+    <th:block layout:fragment="headerfiles">
+        <!-- daterange picker -->
+        <link rel="stylesheet" th:href="@{/LTE/plugins/daterangepicker/daterangepicker.css}">
+        <!-- Tempusdominus Bbootstrap 4 -->
+        <link rel="stylesheet"
+              th:href="@{/LTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css}">
+        <!-- DataTables -->
+        <link rel="stylesheet" th:href="@{/LTE/plugins/datatables-bs4/css/dataTables.bootstrap4.css}">
+        <!-- iCheck for checkboxes and radio inputs -->
+        <link rel="stylesheet" th:href="@{/LTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css}">
+        <link rel="stylesheet" th:href="@{/LTE/plugins/jquery-ui/jquery-ui.css}">
+    </th:block>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div layout:fragment="content" class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Account Bank</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{/home}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Account bank Management</li>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Main row -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <button type="button" class="btn btn-primary" data-toggle="modal"
+                                    data-target=".create-account">Thêm
+                                <i class="fas fa-plus ml-2"> </i>
+                            </button>
+                            <!-- Start search-->
+                            <div class="card-tools">
+                                <form method="GET" th:action="@{/account-banks}">
+                                    <div class="input-group input-group-sm" style="width: 150px;">
+                                        <input type="text" name="searchValue" id="searchValue"
+                                               th:value="${searchValue}" class="form-control float-right"
+                                               placeholder="Search">
+
+                                        <div class="input-group-append">
+                                            <button type="submit" class="btn btn-default">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!--End search-->
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-hover table-striped" style="text-align: center">
+                                <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã Ngân Hàng</th>
+                                    <th>Tên Ngân Hàng</th>
+                                    <th>Số tài khoản</th>
+                                    <th>Loại tài khoản</th>
+                                    <th>Trạng thái</th>
+                                    <th>Người cập nhật</th>
+                                    <th>Ngày cập nhật</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="accountBank,state : ${data.getContent()}">
+                                    <td th:text="${state.count}" style="text-align: right"></td>
+                                    <td th:text="${accountBank.code}" style="text-align: left"></td>
+                                    <td th:text="${accountBank.legalName}" style="text-align: left"></td>
+                                    <td th:text="${accountBank.accountNumber}" style="text-align: left"></td>
+                                    <td th:text="${type.get(accountBank.accountType)}" style="text-align: left"></td>
+                                    <td>
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox"
+                                                   th:checked="${accountBank.status} == 1 ? ${true} : ${false}"
+                                                   class="custom-control-input" id="customSwitch1" disabled>
+                                            <label class="custom-control-label" for="customSwitch1"></label>
+                                        </div>
+                                    </td>
+                                    <td th:text="${accountBank.modifiedBy}" style="text-align: left"></td>
+                                    <td th:text="${#temporals.format(accountBank.modifiedDatetime, 'dd-MM-yyyy HH:mm:ss')}" style="text-align: left"></td>
+                                    <td>
+                                        <button th:attr="accountId=${accountBank.accountId}" type="button" class="btn btn-primary btn-edit-account">
+                                            Sửa <i class="fas fa-edit ml-2"> </i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã Ngân Hàng</th>
+                                    <th>Tên Ngân Hàng</th>
+                                    <th>Số tài khoản</th>
+                                    <th>Loại tài khoản</th>
+                                    <th>Trạng thái</th>
+                                    <th>Người cập nhật</th>
+                                    <th>Ngày cập nhật</th>
+                                    <th></th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <!--phân trang-->
+                        <div class="card-footer clearfix">
+                            <ul th:if="${data.totalPages > 0}"
+                                class="pagination pagination-sm m-0 float-right">.
+                                <li class="page-item"
+                                    th:classappend="${currentPage}>0?'':'disabled'"><a
+                                        class="page-link" th:with="preIndex=${currentPage - 1}"
+                                        th:href="@{/account-banks(searchValue=${searchValue},page=${preIndex}<0?0:${preIndex})}">&laquo;</a>
+                                </li>
+                                <li class="page-item"
+                                    th:each="i : ${#numbers.sequence(0, data.totalPages-1)}"
+                                    th:classappend="${currentPage}==${i}?'active':''"><a
+                                        class="page-link" th:with="currentIndex=${i+1}"
+                                        th:text="${currentIndex}"
+                                        th:href="@{/account-banks(searchValue=${searchValue},page=${i})}"></a>
+                                </li>
+                                <li class="page-item"
+                                    th:classappend="${currentPage}<${data.totalPages}-1?'':'disabled'"><a
+                                        class="page-link" th:with="postIndex=${currentPage + 1}"
+                                        th:href="@{/account-banks(searchValue=${searchValue},page=${postIndex}>=${data.totalPages}?(${data.totalPages-1}):${postIndex})}">&raquo;</a>
+                                </li>
+                            </ul>
+                            <ul th:unless="${data.totalPages > 0}"
+                                class="pagination pagination-sm m-0 float-right">
+                                <li class="page-item" th:classappend="disabled"><a
+                                        class="page-link" th:with="preIndex=${currentPage - 1}"
+                                        href="#">&laquo;</a></li>
+                                <li class="page-item" th:classappend="'active'"><a
+                                        class="page-link" th:text="1"
+                                        th:href="@{/account-banks(searchValue=${searchValue},page=${i})}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="disabled"><a
+                                        class="page-link" th:with="postIndex=${currentPage + 1}"
+                                        href="#">&raquo;</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row (main row) -->
+        </div>
+        <!-- /.modal -->
+        <!-- /start modal add account -->
+        <div class="modal fade create-account" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle1">Thêm tài khoản</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Ngân hàng:</label>
+                            <div class="poup">
+                                <select class="form-control select2" style="width: 100%;" id="bankId">
+                                    <option th:each="bank :${banks}"
+                                            th:text="${bank.legalName}"
+                                            th:value="${bank.bankId}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Số tài khoản:</label>
+                            <input class="form-control col-sm-9" id="account_number" type="text">
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Loại tài khoản:</label>
+                            <select class="form-control col-sm-9" style="width: 100%;" id = "account_type">
+                                <option th:each="element : ${type}"
+                                        th:value="${element.key}"
+                                        th:text="${element.value}">
+                                </option>
+                            </select>
+                        </div>
+                        <!--Trạng thái-->
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Trạng thái:</label>
+                            <div class="col-sm-9">
+                                <div class="switchToggle">
+                                    <input type="checkbox" id="status"/>
+                                    <label for="status"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng
+                        </button>
+                        <button type="button" class="btn btn-primary save-add-account">Lưu
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /end modal add account -->
+
+        <!-- /start modal edit account -->
+        <div class="modal fade edit-account" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle2">Sửa tài khoản</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Ngân hàng:</label>
+                            <div class="poup">
+                                <select class="form-control select2" style="width: 100%;" id="edit-bankId">
+                                    <option th:each="bank :${banks}"
+                                            th:text="${bank.legalName}"
+                                            th:value="${bank.bankId}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Số tài khoản:</label>
+                            <input class="form-control col-sm-9" type="text" id = "number" readonly>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Loại tài khoản:</label>
+                            <select class="form-control col-sm-9" style="width: 100%;" id = "edit-type">
+                                <option th:each="element : ${type}"
+                                        th:value="${element.key}"
+                                        th:text="${element.value}">
+                                </option>
+                            </select>
+                        </div>
+                        <!--Trạng thái-->
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Trạng thái:</label>
+                            <div class="col-sm-9">
+                                <div class="switchToggle">
+                                    <input type="checkbox" id="edit-status"/>
+                                    <label for="edit-status"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng
+                        </button>
+                        <button type="button" class="btn btn-primary save-edit-account">Lưu
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /end modal edit account -->
+    </section>
+
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<th:block layout:fragment="script">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
+    <script src="/js/account.js"></script>
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+diff a/services/src/main/resources/application.properties b/services/src/main/resources/application.properties	(rejected hunks)
+@@ -4,13 +4,13 @@
+ #==== connect to mysql ======#
+ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+ 
+-spring.datasource.url=jdbc:mysql://localhost:3306/group2?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+-spring.datasource.username=root
+-spring.datasource.password=
++#spring.datasource.url=jdbc:mysql://localhost:3306/group2?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
++#spring.datasource.username=root
++#spring.datasource.password=
+ 
+-#spring.datasource.url=jdbc:mysql://192.168.101.28:3306/group2?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC
+-#spring.datasource.username=group2
+-#spring.datasource.password=admin
++spring.datasource.url=jdbc:mysql://192.168.101.28:3306/group2?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC
++spring.datasource.username=group2
++spring.datasource.password=admin
+ 
+ #spring.datasource.url=jdbc:mysql://localhost:3306/finaldatabase?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC
+ #spring.datasource.username=root

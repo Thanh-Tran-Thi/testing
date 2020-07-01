@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Page</title>
+    <th:block layout:fragment="headerfiles"></th:block>
+    <style>
+        .error-alert {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div layout:fragment="content" class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Thêm ngân hàng</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{/home}">Trang chủ</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/banks}">Quản lý ngân hàng</a></li>
+                        <li class="breadcrumb-item active">Thêm </li>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Thêm mới</h3>
+                        <br>
+                    </div>
+                    <br>
+
+                    <form method="post" th:action="@{/banks/create}" th:object="${bankDTO}">
+                        <div class="card-body">
+                            <p class="error-alert" th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}"></p>
+                            <div class="form-group">
+                                <label for="code">Mã ngân hàng</label>
+                                <p class="error-alert" th:if="${#fields.hasErrors('code')}"
+                                   th:errors="*{code}"></p>
+                                <input type="text" id="code" class="form-control" th:field="*{code}">
+                            </div>
+                            <div class="form-group">
+                                <label for="legalName">Tên ngân hàng</label>
+                                <p class="error-alert" th:if="${#fields.hasErrors('legalName')}"
+                                   th:errors="*{legalName}"></p>
+                                <input type="text" id="legalName" class="form-control" th:field="*{legalName}">
+                            </div>
+                            <div class="form-group">
+                                <label for="prefixCard">Đầu số thẻ</label>
+                                <p class="error-alert" th:if="${#fields.hasErrors('prefixCard')}"
+                                   th:errors="*{prefixCard}"></p>
+                                <input type="text" id="prefixCard" class="form-control" th:field="*{prefixCard}">
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                               <input type="checkbox" class="custom-control-input" id="defaultChecked2" checked th:field="*{status}" th:value="true?1:0">
+                            <label class="custom-control-label" for="defaultChecked2">Active</label>
+                        </div>
+                        </div>
+
+                        <div class="col-12">
+                            <a href="/banks" class="btn btn-secondary float-left">Cancel</a>
+                            <input type="submit" value="Confirm" class="btn btn-success float-left"
+                                   style="margin-left: 20px">
+                        </div>
+                    </form>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<th:block layout:fragment="script"></th:block>
+</body>
+
+</html>
